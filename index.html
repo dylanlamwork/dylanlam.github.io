@@ -140,8 +140,8 @@
         }
         .nav-link:hover { background: rgba(128, 128, 128, 0.1); }
 
-        /* Classes for Mobile Logic */
         .desktop-only { display: block; }
+        
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -156,7 +156,6 @@
         .mobile-menu-btn:hover { background: rgba(128, 128, 128, 0.1); }
         .mobile-menu-btn.active { background: rgba(128, 128, 128, 0.2); }
 
-        /* Theme Toggle */
         .theme-toggle {
             background: none;
             border: none;
@@ -194,13 +193,7 @@
             z-index: 999;
         }
         .mobile-dropdown.active { display: flex; }
-        
-        .mobile-dropdown .nav-link {
-            width: 100%;
-            text-align: center;
-            padding: 14px;
-            font-size: 15px;
-        }
+        .mobile-dropdown .nav-link { width: 100%; text-align: center; padding: 14px; font-size: 15px; }
 
         /* --- HERO --- */
         .hero-section {
@@ -375,7 +368,7 @@
 
         .brand-card {
             position: relative;
-            border-radius: 30px;
+            border-radius: var(--radius-card);
             background: var(--card-bg);
             border: 1px solid var(--glass-border);
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -396,13 +389,20 @@
             border-color: var(--accent-blue);
         }
 
+        /* HEADER & META (TOP SECTION - Z-Index > Reveal) */
+        .card-top-section {
+            position: relative;
+            z-index: 20; 
+            /* Ensure clicks pass through to reveal underneath if necessary, 
+               but we want plus button to handle interaction */
+            pointer-events: none; 
+        }
+        
         .card-header {
             display: flex;
             align-items: center;
             gap: 16px;
             margin-bottom: 24px;
-            position: relative;
-            z-index: 2;
         }
 
         .brand-avatar {
@@ -447,10 +447,8 @@
             grid-template-columns: 1fr 2fr;
             gap: 16px;
             padding-top: 24px;
-            padding-bottom: 24px;
+            padding-bottom: 10px;
             border-top: 1px solid var(--glass-border);
-            position: relative;
-            z-index: 2;
         }
 
         .meta-item { display: flex; flex-direction: column; }
@@ -458,6 +456,7 @@
         .meta-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.05em; margin-bottom: 6px; }
         .meta-val { font-size: 14px; color: var(--text-primary); font-weight: 500; }
 
+        /* REVEAL & BUTTON */
         .plus-btn {
             position: absolute;
             bottom: 24px;
@@ -474,20 +473,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 30;
+            z-index: 50; /* Always accessible */
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             backdrop-filter: blur(10px);
         }
         .plus-btn:hover { background: var(--btn-hover); transform: scale(1.1); }
         .brand-card.active .plus-btn { background: var(--text-primary); color: var(--bg-body); transform: rotate(45deg); }
 
-        /* REVEAL PANEL (NO OVERLAP) */
         .card-reveal {
             position: absolute;
             bottom: 0; 
             left: 0; 
             width: 100%;
-            height: calc(100% - 120px); /* Height = 100% minus Header+Meta height (~120px) */
+            height: 55%; /* Desktop Default */
             background: var(--reveal-bg);
             padding: 32px;
             padding-right: 70px;
@@ -498,12 +496,10 @@
             transform: translateY(20px);
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            z-index: 25; /* Covers bottom meta, but not top */
+            z-index: 15; /* BELOW the Top Section (20) but ABOVE card bg */
             border-top: 1px solid var(--glass-border);
             pointer-events: none;
         }
-        /* Note: Meta Grid z-index is 2, so this z-index 25 will cover it, 
-           BUT the calculated height ensures it only physically covers the bottom section. */
 
         .brand-card.active .card-reveal {
             opacity: 1;
@@ -540,6 +536,22 @@
         .thought-arrow { opacity: 0; color: var(--text-primary); transform: translateX(-10px); transition: all 0.3s ease; }
         .thought-item:hover .thought-arrow { opacity: 1; transform: translateX(0); }
         
+        /* --- CAREER TABLE --- */
+        .career-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .career-row { border-bottom: 1px solid var(--glass-border); transition: background 0.2s; }
+        .career-row:hover { background: var(--glass-hover); }
+        .career-cell { padding: 24px 0; vertical-align: top; color: var(--text-secondary); font-size: 15px; }
+        .c-role { color: var(--text-primary); font-weight: 600; font-size: 16px; width: 30%; }
+        .c-company { color: var(--text-primary); width: 25%; }
+        .c-date { text-align: right; font-family: monospace; font-size: 13px; opacity: 0.6; width: 15%; }
+        .c-desc { font-size: 14px; line-height: 1.6; }
+
+        .footer { text-align: center; padding: 100px 0; color: var(--text-secondary); font-size: 13px; border-top: 1px solid var(--glass-border); margin-top: 100px; }
+        .footer a { color: var(--text-primary); margin: 0 10px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* --- MOBILE BREAKPOINT --- */
         @media (max-width: 768px) {
             h1 { font-size: 48px; }
             .stats-row { flex-wrap: wrap; gap: 40px; }
@@ -550,10 +562,22 @@
             .c-date { text-align: left; margin-bottom: 10px; }
             .thought-item { flex-direction: column; gap: 12px; }
             .thought-date { min-width: auto; }
+            .thought-arrow { display: none; }
             
             /* Mobile Nav Hiding */
             .desktop-only { display: none; }
             .mobile-menu-btn { display: block; }
+
+            /* Mobile Reveal Adjustment */
+            .card-reveal {
+                height: 100% !important;
+                z-index: 30; /* On mobile, overlap everything to act as full modal */
+                padding-top: 80px; /* Space to not hide behind header if needed, but 100% usually covers */
+            }
+            /* If mobile reveal overlaps, we hide the Top Section visuals to avoid clutter */
+            .brand-card.active .card-top-section {
+                opacity: 0.1; /* Fade out background details */
+            }
         }
     </style>
 </head>
@@ -663,22 +687,24 @@
         <div class="project-grid">
             
             <div class="brand-card" data-category="data sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-amazon">A</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Efficiency Enhancement Tool</div>
-                        <div class="card-client">Client: Amazon</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-amazon">A</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Efficiency Enhancement Tool</div>
+                            <div class="card-client">Client: Amazon</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2025</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Data & Business Analytics</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Data Analytics</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2025</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Data & Business Analytics</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Data Analytics</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -688,22 +714,24 @@
             </div>
 
             <div class="brand-card" data-category="notion">
-                <div class="card-header">
-                    <div class="brand-avatar bg-pmax">P</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Project Management System</div>
-                        <div class="card-client">Client: Filian TV</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-pmax">P</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Project Management System</div>
+                            <div class="card-client">Client: Filian TV</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2025</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Notion System</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Notion System Setup</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2025</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Notion System</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Notion System Setup</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -713,22 +741,24 @@
             </div>
 
             <div class="brand-card" data-category="sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-muji">M</div>
-                    <div class="card-title-group">
-                        <div class="card-title">MUJI Box</div>
-                        <div class="card-client">Client: MUJI</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-muji">M</div>
+                        <div class="card-title-group">
+                            <div class="card-title">MUJI Box</div>
+                            <div class="card-client">Client: MUJI</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2024</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Sales & Account Management</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2024</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Sales & Account Management</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -739,22 +769,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-apple"></div>
-                    <div class="card-title-group">
-                        <div class="card-title">Apple Social Video</div>
-                        <div class="card-client">Client: Apple</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-apple"></div>
+                        <div class="card-title-group">
+                            <div class="card-title">Apple Social Video</div>
+                            <div class="card-client">Client: Apple</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2024</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Video Production</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2024</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Video Production</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -765,22 +797,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-mammam">M</div>
-                    <div class="card-title-group">
-                        <div class="card-title">MÂMMÂM Eatery & Lounge</div>
-                        <div class="card-client">Client: Vietcetera</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-mammam">M</div>
+                        <div class="card-title-group">
+                            <div class="card-title">MÂMMÂM Eatery & Lounge</div>
+                            <div class="card-client">Client: Vietcetera</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2024</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2024</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -791,22 +825,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-lang">L</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Lang Spa</div>
-                        <div class="card-client">Client: Lang Spa</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-lang">L</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Lang Spa</div>
+                            <div class="card-client">Client: Lang Spa</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2024</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2024</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -817,22 +853,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-vero-green">V</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Vero Rebrand & Web Identity</div>
-                        <div class="card-client">Client: Vero ASEAN</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-vero-green">V</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Vero Rebrand & Web Identity</div>
+                            <div class="card-client">Client: Vero ASEAN</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2024</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Website Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2024</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Website Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -842,47 +880,52 @@
             </div>
 
             <div class="brand-card" data-category="pm">
-                <div class="card-header">
-                    <div class="brand-avatar bg-bakes">B</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Bakes Store #4</div>
-                        <div class="card-client">Client: The Lab Concepts</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-bakes">B</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Bakes Store #4</div>
+                            <div class="card-client">Client: The Lab Concepts</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2024</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2024</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
                 <div class="card-reveal">
                     <p class="reveal-desc">Managed the rollout of Bakes' first mall location. Coordinated between property stakeholders (Vincom) and internal design teams to ensure a smooth build-out.</p>
-                    </div>
+                    <a href="https://www.linkedin.com/feed/update/urn:li:activity:7204748271401992192?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_multiple_media_viewer%3BIP%2F4Yoj%2FSQCl7g925THcDQ%3D%3D" target="_blank" class="learn-more-btn">Learn More ↗</a>
+                </div>
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-bitis">E</div>
-                    <div class="card-title-group">
-                        <div class="card-title">EVA Exhibition</div>
-                        <div class="card-client">Client: Sunlife Insurance</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-bitis">E</div>
+                        <div class="card-title-group">
+                            <div class="card-title">EVA Exhibition</div>
+                            <div class="card-client">Client: Sunlife Insurance</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2023</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -893,22 +936,24 @@
             </div>
 
             <div class="brand-card" data-category="notion">
-                <div class="card-header">
-                    <div class="brand-avatar bg-pmax">B</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Breakthrough Energy Website</div>
-                        <div class="card-client">Client: GNS Studio</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-pmax">B</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Breakthrough Energy Website</div>
+                            <div class="card-client">Client: GNS Studio</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2023</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Notion System</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Notion System Setup, Website Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Notion System</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Notion System Setup, Website Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -919,22 +964,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-yingtao">Y</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Yingtao 櫻桃 Brand Identity</div>
-                        <div class="card-client">Client: August Hospitality Group</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-yingtao">Y</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Yingtao 櫻桃 Brand Identity</div>
+                            <div class="card-client">Client: August Hospitality Group</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2023</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -945,22 +992,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-bakes">B</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Bakes Flagship Store</div>
-                        <div class="card-client">Client: The Lab Concepts</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-bakes">B</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Bakes Flagship Store</div>
+                            <div class="card-client">Client: The Lab Concepts</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2023</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -971,22 +1020,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-pmax">M</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Mámi Cocktails</div>
-                        <div class="card-client">Client: 86Proof Hospitality Group</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-pmax">M</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Mámi Cocktails</div>
+                            <div class="card-client">Client: 86Proof Hospitality Group</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2023</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -997,22 +1048,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-bitis">B</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Biti’s 40Y Exhibition</div>
-                        <div class="card-client">Client: Biti's</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-bitis">B</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Biti’s 40Y Exhibition</div>
+                            <div class="card-client">Client: Biti's</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2023</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -1023,22 +1076,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-bitis">D</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Du (Enough) Exhibition</div>
-                        <div class="card-client">Client: Sunlife Insurance</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-bitis">D</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Du (Enough) Exhibition</div>
+                            <div class="card-client">Client: Sunlife Insurance</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2023</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -1048,22 +1103,24 @@
             </div>
 
             <div class="brand-card" data-category="pm">
-                <div class="card-header">
-                    <div class="brand-avatar bg-sunlife">S</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Sunlife Hanoi Head Office</div>
-                        <div class="card-client">Client: Sunlife Insurance</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-sunlife">S</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Sunlife Hanoi Head Office</div>
+                            <div class="card-client">Client: Sunlife Insurance</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2023</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -1074,22 +1131,24 @@
             </div>
 
             <div class="brand-card" data-category="data">
-                <div class="card-header">
-                    <div class="brand-avatar bg-pmax">S</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Sales System Setup</div>
-                        <div class="card-client">Client: The Lab</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-pmax">S</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Sales System Setup</div>
+                            <div class="card-client">Client: The Lab</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2023</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Data & Business Analytics</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Data Analytics</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Data & Business Analytics</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Data Analytics</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -1099,22 +1158,24 @@
             </div>
 
             <div class="brand-card" data-category="pm">
-                <div class="card-header">
-                    <div class="brand-avatar bg-pmax">B</div>
-                    <div class="card-title-group">
-                        <div class="card-title">B34CH NFT</div>
-                        <div class="card-client">Client: OP3N</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-pmax">B</div>
+                        <div class="card-title-group">
+                            <div class="card-title">B34CH NFT</div>
+                            <div class="card-client">Client: OP3N</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2022</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2022</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -1124,22 +1185,24 @@
             </div>
 
             <div class="brand-card" data-category="pm">
-                <div class="card-header">
-                    <div class="brand-avatar bg-shadow">S</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Shadow Lounge</div>
-                        <div class="card-client">Client: The Lab Concepts</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-shadow">S</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Shadow Lounge</div>
+                            <div class="card-client">Client: The Lab Concepts</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2022</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2022</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
@@ -1150,22 +1213,24 @@
             </div>
 
             <div class="brand-card" data-category="pm sales">
-                <div class="card-header">
-                    <div class="brand-avatar bg-bitis">L</div>
-                    <div class="card-title-group">
-                        <div class="card-title">Love Is Hard. HIV Prevention Is Easy Exhibition</div>
-                        <div class="card-client">Client: HAIVN + US CDC</div>
+                <div class="card-top-section">
+                    <div class="card-header">
+                        <div class="brand-avatar bg-bitis">L</div>
+                        <div class="card-title-group">
+                            <div class="card-title">Love Is Hard. HIV Prevention Is Easy Exhibition</div>
+                            <div class="card-client">Client: HAIVN + US CDC</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta-grid">
-                    <div class="meta-item">
-                        <span class="meta-label">Year</span><span class="meta-val">2022</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
-                    </div>
-                    <div class="meta-item meta-full">
-                        <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Year</span><span class="meta-val">2022</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Scope</span><span class="meta-val">Project Management, Sales</span>
+                        </div>
+                        <div class="meta-item meta-full">
+                            <span class="meta-label">Project Type</span><span class="meta-val">Brand Identity, Interior Design</span>
+                        </div>
                     </div>
                 </div>
                 <button class="plus-btn" onclick="toggleCard(this)">+</button>
