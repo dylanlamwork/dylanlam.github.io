@@ -239,9 +239,6 @@
             transition: background-color 0.5s ease;
         }
 
-        /* APPLE STYLE LAYOUT:
-           Content pinned to bottom. Flex container separating Left (Text) and Right (Buttons).
-        */
         .hero-content {
             position: absolute;
             bottom: 0;
@@ -251,34 +248,31 @@
             z-index: 10;
             padding: 60px;
             padding-bottom: 80px;
+            /* CHANGED: Center Align Everything */
             display: flex;
-            justify-content: space-between; /* Push items to edges */
-            align-items: flex-end; /* Align to bottom */
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center; 
+            text-align: center;
             pointer-events: none;
-            /* Gradient fade to make text readable over the bottom of the globe */
             background: linear-gradient(to top, var(--bg-body) 10%, transparent 100%);
         }
         
         .hero-text-side {
-            text-align: left;
             pointer-events: auto;
-            max-width: 600px;
-        }
-
-        .hero-action-side {
-            pointer-events: auto;
-            display: flex;
-            gap: 16px;
+            max-width: 800px;
         }
 
         h1 {
             font-family: "Inter", sans-serif;
-            font-size: 72px; /* Massive Title */
+            font-size: 72px; 
             font-weight: 700;
             letter-spacing: -0.04em;
-            line-height: 1; 
+            /* CHANGED: Increased line-height and padding to prevent cut-off of 'y' */
+            line-height: 1.2; 
+            padding-bottom: 0.1em; 
             margin: 0;
-            margin-bottom: 24px;
+            margin-bottom: 8px;
             background: var(--hero-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -287,46 +281,16 @@
         }
 
         .hero-sub {
-            font-size: 22px; 
+            font-size: 20px; 
             font-weight: 400;
             color: var(--text-secondary);
             letter-spacing: -0.01em;
-            line-height: 1.5;
+            line-height: 1.6;
             text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        /* Apple Style Buttons (Pills) */
-        .hero-btn {
-            padding: 14px 28px;
-            border-radius: 100px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .hero-btn.primary {
-            background: var(--text-primary);
-            color: var(--bg-body);
-            border: 1px solid transparent;
-        }
-        .hero-btn.primary:hover {
-            transform: scale(1.05);
-        }
-
-        .hero-btn.secondary {
-            background: rgba(128,128,128,0.15);
-            color: var(--text-primary);
-            border: 1px solid transparent;
-            backdrop-filter: blur(10px);
-        }
-        .hero-btn.secondary:hover {
-            background: rgba(128,128,128,0.25);
-        }
-        
         /* Light Mode Visibility Fixes */
         [data-theme="light"] h1 {
             filter: none;
@@ -343,14 +307,10 @@
 
         @media (max-width: 900px) {
             .hero-content {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 40px;
                 padding: 30px;
-                padding-bottom: 120px; /* Space for mobile nav if needed */
+                padding-bottom: 120px; 
             }
             h1 { font-size: 48px; }
-            .hero-action-side { width: 100%; justify-content: flex-start; }
         }
 
         /* --- SECTIONS --- */
@@ -742,11 +702,6 @@
                     A strategic thinker who thrives at the intersection of <br>
                     <span class="highlight">Structure</span> and <span class="highlight">Creativity</span>.
                 </div>
-            </div>
-            
-            <div class="hero-action-side">
-                <a href="#work" class="hero-btn primary">View Work</a>
-                <a href="#career" class="hero-btn secondary">About Me</a>
             </div>
         </div>
     </header>
