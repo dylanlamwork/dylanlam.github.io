@@ -49,9 +49,11 @@
             --btn-bg: rgba(255, 255, 255, 0.1);
             --btn-hover: rgba(255, 255, 255, 0.2);
 
-            /* Mouse Glow Color */
-            --cursor-glow-color: rgba(255, 160, 80, 0.1); /* Warm Gold Glow */
-            --cursor-blend: screen;
+            /* --- CURSOR GLOW (Dark Mode) --- */
+            --cursor-bg: 255, 255, 255; /* White */
+            --cursor-blend: difference; /* Invert colors over text */
+            --cursor-opacity: 1;
+            --cursor-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.4);
         }
 
         /* LIGHT MODE OVERRIDES */
@@ -85,9 +87,11 @@
             --btn-bg: rgba(0, 0, 0, 0.05);
             --btn-hover: rgba(0, 0, 0, 0.1);
 
-            /* Mouse Glow Color (Light) */
-            --cursor-glow-color: rgba(41, 151, 255, 0.15);
-            --cursor-blend: multiply;
+            /* --- CURSOR GLOW (Light Mode Fix) --- */
+            --cursor-bg: 41, 151, 255; /* Accent Blue */
+            --cursor-blend: multiply; /* Darkens content behind it */
+            --cursor-opacity: 0.6;
+            --cursor-shadow: 0 0 30px 10px rgba(41, 151, 255, 0.3);
         }
 
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
@@ -101,23 +105,41 @@
             overflow-x: hidden;
             line-height: 1.5;
             transition: background-color var(--transition-speed), color var(--transition-speed);
+            cursor: none; /* HIDE DEFAULT CURSOR */
         }
 
-        a { text-decoration: none; color: inherit; cursor: pointer; }
-        button { font-family: inherit; }
+        a, button { cursor: none; }
 
-        /* --- MOUSE FOLLOW GLOW --- */
+        /* --- MAIN CURSOR GLOW (SINGLE DOT) --- */
         #cursor-glow {
             position: fixed;
             top: 0; left: 0;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, var(--cursor-glow-color) 0%, transparent 60%);
-            transform: translate(-50%, -50%);
+            width: 32px; 
+            height: 32px;
+            border-radius: 50%;
+            
+            /* Dynamic Colors based on Theme */
+            background-color: rgba(var(--cursor-bg), var(--cursor-opacity));
+            box-shadow: var(--cursor-shadow);
+            mix-blend-mode: var(--cursor-blend);
+            
             pointer-events: none;
             z-index: 9999;
-            mix-blend-mode: var(--cursor-blend); 
-            transition: opacity 0.3s ease;
+            
+            /* Instant movement via GPU */
+            will-change: transform;
+            transform: translate(-50%, -50%);
+            
+            /* Smooth transition only for hover states */
+            transition: width 0.2s, height 0.2s, background-color 0.3s;
+        }
+
+        /* Hover State: Expands slightly */
+        body:has(a:hover) #cursor-glow,
+        body:has(button:hover) #cursor-glow {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(var(--cursor-bg), 0.2);
         }
 
         /* --- NAV --- */
@@ -160,6 +182,7 @@
             border-radius: var(--radius-button);
             transition: all 0.2s ease;
             opacity: 0.7;
+            text-decoration: none; /* REMOVED UNDERLINE */
         }
 
         .nav-link:hover { 
@@ -239,6 +262,13 @@
             transition: background-color 0.5s ease;
         }
 
+        /* --- Starfield Canvas --- */
+        #starfield canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
         .hero-content {
             position: absolute;
             bottom: 0;
@@ -248,7 +278,7 @@
             z-index: 10;
             padding: 60px;
             padding-bottom: 80px;
-            /* CHANGED: Center Align Everything */
+            /* Center Align Everything */
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
@@ -268,7 +298,6 @@
             font-size: 72px; 
             font-weight: 700;
             letter-spacing: -0.04em;
-            /* CHANGED: Increased line-height and padding to prevent cut-off of 'y' */
             line-height: 1.2; 
             padding-bottom: 0.1em; 
             margin: 0;
@@ -311,6 +340,10 @@
                 padding-bottom: 120px; 
             }
             h1 { font-size: 48px; }
+            
+            /* On mobile, show default cursor */
+            body { cursor: auto; }
+            #cursor-glow { display: none; }
         }
 
         /* --- SECTIONS --- */
@@ -854,7 +887,7 @@
             <div class="brand-card" data-category="pm sales">
                 <div class="card-top-section">
                     <div class="card-header">
-                        <div class="brand-avatar bg-apple"></div>
+                        <div class="brand-avatar bg-apple">A</div>
                         <div class="card-title-group">
                             <div class="card-title">Apple Social Video</div>
                             <div class="card-client">Client: Apple</div>
@@ -1412,30 +1445,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        /* --- 1. MOUSE GLOW FOLLOWER --- */
+        /* --- 1. MOUSE GLOW FOLLOWER (SINGLE DOT) --- */
         const cursorGlow = document.getElementById('cursor-glow');
-        let glowX = window.innerWidth / 2;
-        let glowY = window.innerHeight / 2;
-
+        
+        // BẮT SỰ KIỆN CHUỘT DI CHUYỂN
         document.addEventListener('mousemove', (e) => {
-            glowX = e.clientX;
-            glowY = e.clientY;
-            cursorGlow.style.left = `${glowX}px`;
-            cursorGlow.style.top = `${glowY}px`;
+            // Gán trực tiếp vị trí chuột vào đốm sáng => KHÔNG CÓ ĐỘ TRỄ
+            cursorGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
         });
 
         /* --- 2. HATOM-INSPIRED GLOBE & INTERACTION --- */
         const container = document.getElementById('starfield');
         let scene, camera, renderer, globeMesh, particlesMesh;
-        let mouseX = 0;
-        let mouseY = 0;
+        
+        // Use separate normalized mouse coordinates for 3D tilt
+        let normMouseX = 0;
+        let normMouseY = 0;
 
         function initGlobe() {
             try {
                 scene = new THREE.Scene();
                 
                 // Camera setup
-                // Positioned slightly back to allow text to float in front
                 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
                 camera.position.z = 4.5; 
 
@@ -1445,11 +1476,9 @@
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
                 container.appendChild(renderer.domElement);
 
-                // --- OBJECT 1: WIREFRAME GLOBE (ICOSAHEDRON) ---
-                // Replacing Galaxy with Geometry from Hatom1
-                const globeGeo = new THREE.IcosahedronGeometry(2.0, 20); // Size adapted for Hero
+                // --- OBJECT 1: WIREFRAME GLOBE ---
+                const globeGeo = new THREE.SphereGeometry(2.0, 32, 32); 
                 
-                // Material will be updated by Theme function
                 const globeMat = new THREE.MeshBasicMaterial({ 
                     color: 0x333333,
                     wireframe: true,
@@ -1461,26 +1490,25 @@
                 scene.add(globeMesh);
 
                 // --- OBJECT 2: PARTICLE CLOUD ---
-                // Logic extracted from Hatom1
                 const particlesGeo = new THREE.BufferGeometry();
-                const particleCount = 600; // Increased slightly for density
+                
+                // MODIFIED: Particle count reverted to 1800
+                const particleCount = 1800; 
                 const posArray = new Float32Array(particleCount * 3);
 
-                for(let i = 0; i < particleCount * 3; i++) {
-                    // Scatter particles in a sphere shape around the wireframe
-                    const r = 2.4; // Radius slightly larger than wireframe
-                    const theta = Math.random() * Math.PI * 2;
-                    const phi = Math.acos(2 * Math.random() - 1);
-                    
-                    posArray[i] = r * Math.sin(phi) * Math.cos(theta);
-                    posArray[i+1] = r * Math.sin(phi) * Math.sin(theta);
-                    posArray[i+2] = r * Math.cos(phi);
+                for(let i = 0; i < particleCount * 3; i+=3) {
+                    // NEW LOGIC: Distribute stars in a LARGE 3D BOX to fill the screen corners
+                    // X, Y, Z coordinates spread from -20 to 20
+                    posArray[i] = (Math.random() - 0.5) * 40; 
+                    posArray[i+1] = (Math.random() - 0.5) * 40;
+                    posArray[i+2] = (Math.random() - 0.5) * 40;
                 }
 
                 particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
                 
+                // MODIFIED: Size and opacity reverted
                 const particlesMat = new THREE.PointsMaterial({
-                    size: 0.02,
+                    size: 0.08,
                     color: 0xffffff,
                     transparent: true,
                     opacity: 0.6
@@ -1489,40 +1517,37 @@
                 particlesMesh = new THREE.Points(particlesGeo, particlesMat);
                 scene.add(particlesMesh);
 
-                // Initialize Theme Colors immediately
                 const currentTheme = document.documentElement.getAttribute('data-theme');
                 updateGlobeTheme(currentTheme);
 
-                animate();
+                animateGlobe();
 
             } catch (e) {
                 console.error("Three.js Globe Failed to Initialize:", e);
             }
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
+        function animateGlobe() {
+            requestAnimationFrame(animateGlobe);
 
             if(globeMesh && particlesMesh) {
                 // Base Rotation (Slow Spin)
                 globeMesh.rotation.y += 0.002;
                 particlesMesh.rotation.y -= 0.001;
 
-                // Mouse Interaction (Tilt Physics from Hatom1)
-                // We use damping (0.05) to make it smooth
-                globeMesh.rotation.x += (mouseY * 0.5 - globeMesh.rotation.x) * 0.05;
-                globeMesh.rotation.y += (mouseX * 0.5 - globeMesh.rotation.y) * 0.05;
+                // Mouse Interaction (Tilt Physics)
+                globeMesh.rotation.x += (normMouseY * 0.5 - globeMesh.rotation.x) * 0.05;
+                globeMesh.rotation.y += (normMouseX * 0.5 - globeMesh.rotation.y) * 0.05;
                 
-                particlesMesh.rotation.x += (mouseY * 0.5 - particlesMesh.rotation.x) * 0.02;
+                particlesMesh.rotation.x += (normMouseY * 0.5 - particlesMesh.rotation.x) * 0.02;
             }
             renderer.render(scene, camera);
         }
 
-        // Mouse Tracking
+        // Separate Listener for 3D Normalization
         document.addEventListener('mousemove', (event) => {
-            // Normalized coordinates (-1 to 1)
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            normMouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            normMouseY = -(event.clientY / window.innerHeight) * 2 + 1;
         });
 
         // Resize Handler
@@ -1584,19 +1609,20 @@
             
             if(theme === 'light') {
                 // LIGHT MODE: Blueprint / Technical Look
-                globeMesh.material.color.setHex(0x1a1a1a); // Dark Grey Wireframe
+                globeMesh.material.color.setHex(0x1a1a1a); 
                 globeMesh.material.opacity = 0.08; 
                 
-                particlesMesh.material.color.setHex(0x000000); // Black dots
+                particlesMesh.material.color.setHex(0x000000); 
                 particlesMesh.material.opacity = 0.3; 
                 
                 container.style.opacity = "0.5"; 
             } else {
                 // DARK MODE: Glowing / Space Look
-                globeMesh.material.color.setHex(0xffffff); // White Wireframe
+                globeMesh.material.color.setHex(0xffffff); 
                 globeMesh.material.opacity = 0.12; 
                 
-                particlesMesh.material.color.setHex(0xffffff); // White dots
+                particlesMesh.material.color.setHex(0xffffff); 
+                // MODIFIED: Reverted opacity back to 0.6
                 particlesMesh.material.opacity = 0.6; 
                 
                 container.style.opacity = "1";
