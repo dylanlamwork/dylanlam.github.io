@@ -142,6 +142,23 @@
             background-color: rgba(var(--cursor-bg), 0.2);
         }
 
+        /* --- BACKGROUND STARFIELD (FIXED) --- */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1; /* Sits behind content */
+            pointer-events: none; /* Let clicks pass through */
+        }
+        
+        #starfield canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
         /* --- NAV --- */
         .nav-wrapper {
             position: fixed;
@@ -182,7 +199,7 @@
             border-radius: var(--radius-button);
             transition: all 0.2s ease;
             opacity: 0.7;
-            text-decoration: none; /* REMOVED UNDERLINE */
+            text-decoration: none; 
         }
 
         .nav-link:hover { 
@@ -251,22 +268,8 @@
             height: 100vh; /* Full Height */
             width: 100%;
             overflow: hidden;
-            background: var(--bg-body);
-        }
-
-        .hero-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1;
-            background-color: var(--bg-body);
-            transition: background-color 0.5s ease;
-        }
-
-        /* --- Starfield Canvas --- */
-        #starfield canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+            background: transparent; /* Changed from var(--bg-body) to see stars */
+            z-index: 10; /* Above stars */
         }
 
         .hero-content {
@@ -352,7 +355,7 @@
             max-width: 1280px;
             margin: 0 auto;
             padding: 100px 20px;
-            z-index: 10;
+            z-index: 10; /* Ensure above stars */
         }
 
         .section-title {
@@ -373,6 +376,7 @@
             border-top: 1px solid var(--glass-border);
             border-bottom: 1px solid var(--glass-border);
             transition: border-color var(--transition-speed);
+            background: var(--bg-body); /* Ensure readability */
         }
         .stat-item { text-align: center; }
         
@@ -674,7 +678,7 @@
         .c-date { text-align: right; font-family: monospace; font-size: 13px; opacity: 0.6; width: 15%; }
         .c-desc { font-size: 14px; line-height: 1.6; }
 
-        .footer { text-align: center; padding: 100px 0; color: var(--text-secondary); font-size: 13px; border-top: 1px solid var(--glass-border); margin-top: 100px; }
+        .footer { position: relative; z-index: 10; text-align: center; padding: 100px 0; color: var(--text-secondary); font-size: 13px; border-top: 1px solid var(--glass-border); margin-top: 100px; background: var(--bg-body); }
         .footer a { color: var(--text-primary); margin: 0 10px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -701,6 +705,8 @@
 
     <div id="cursor-glow"></div>
 
+    <div id="starfield"></div>
+
     <div class="nav-wrapper">
         <nav class="nav-bar">
             <div class="nav-links-container">
@@ -726,8 +732,6 @@
     </div>
 
     <header class="hero-section" id="overview">
-        <div class="hero-bg" id="starfield"></div>
-        
         <div class="hero-content">
             <div class="hero-text-side">
                 <h1>Hi, I’m Dylan.</h1>
@@ -1492,7 +1496,6 @@
                 // --- OBJECT 2: PARTICLE CLOUD ---
                 const particlesGeo = new THREE.BufferGeometry();
                 
-                // MODIFIED: Particle count reverted to 1800
                 const particleCount = 1800; 
                 const posArray = new Float32Array(particleCount * 3);
 
@@ -1506,7 +1509,6 @@
 
                 particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
                 
-                // MODIFIED: Size and opacity reverted
                 const particlesMat = new THREE.PointsMaterial({
                     size: 0.08,
                     color: 0xffffff,
@@ -1562,8 +1564,29 @@
         // Init
         initGlobe();
 
+        /* --- 3. SCROLL FADE LOGIC (NEW) --- */
+        window.addEventListener('scroll', () => {
+            if (!globeMesh) return;
 
-        /* --- 3. SPOTLIGHT EFFECT FOR CARDS --- */
+            const scrollY = window.scrollY;
+            const fadePoint = 500; // Pixels down where globe disappears completely
+
+            // Calculate opacity based on scroll: 1 at top, 0 at fadePoint
+            let opacity = 1 - (scrollY / fadePoint);
+            if (opacity < 0) opacity = 0;
+            
+            // Get max opacity based on current theme
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const maxOpacity = isDark ? 0.15 : 0.08;
+            
+            // Apply opacity to the globe material only
+            globeMesh.material.opacity = opacity * maxOpacity;
+            
+            // Subtle parallax for the globe (moves down slightly as you scroll)
+            globeMesh.position.y = -scrollY * 0.002; 
+        });
+
+        /* --- 4. SPOTLIGHT EFFECT FOR CARDS --- */
         const projectGrid = document.querySelector('.project-grid');
         const cards = document.querySelectorAll('.brand-card');
 
@@ -1579,7 +1602,7 @@
             });
         }
 
-        /* --- 4. THEME & UI LOGIC --- */
+        /* --- 5. THEME & UI LOGIC --- */
         const themeBtn = document.getElementById('themeBtn');
         const themeIcon = document.getElementById('themeIcon');
         const htmlTag = document.documentElement;
@@ -1622,7 +1645,6 @@
                 globeMesh.material.opacity = 0.12; 
                 
                 particlesMesh.material.color.setHex(0xffffff); 
-                // MODIFIED: Reverted opacity back to 0.6
                 particlesMesh.material.opacity = 0.6; 
                 
                 container.style.opacity = "1";
