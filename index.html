@@ -108,7 +108,10 @@
             cursor: none; /* HIDE DEFAULT CURSOR */
         }
 
-        a, button { cursor: none; }
+        a, button { cursor: none; text-decoration: none; }
+        
+        /* Global override for links */
+        a { text-decoration: none !important; }
 
         /* --- MAIN CURSOR GLOW (SINGLE DOT) --- */
         #cursor-glow {
@@ -124,6 +127,7 @@
             z-index: 9999;
             will-change: transform;
             transform: translate(-50%, -50%);
+            /* Removed smooth transition on transform to make it snappier and less laggy feeling */
             transition: width 0.2s, height 0.2s, background-color 0.3s;
         }
 
@@ -395,6 +399,7 @@
             transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
             position: relative;
             overflow: hidden;
+            will-change: transform; /* Performance hint */
         }
 
         /* Spotlight Logic for Scopes */
@@ -493,6 +498,7 @@
             overflow: hidden;
             height: 440px;
             justify-content: flex-start;
+            will-change: transform; /* Performance hint */
         }
 
         /* Spotlight Effect Logic */
@@ -1450,12 +1456,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        /* --- 1. MOUSE GLOW FOLLOWER (SINGLE DOT) --- */
+        /* --- 1. MOUSE GLOW FOLLOWER (SINGLE DOT) - OPTIMIZED --- */
         const cursorGlow = document.getElementById('cursor-glow');
-        
+        let mouseX = 0;
+        let mouseY = 0;
+        let cursorX = 0;
+        let cursorY = 0;
+
+        // Only update coordinate variables on mousemove
         document.addEventListener('mousemove', (e) => {
-            cursorGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
         });
+
+        // Use requestAnimationFrame for smooth visual updates
+        function animateCursor() {
+            // Simple easing for smooth follow effect
+            cursorX += (mouseX - cursorX) * 0.2;
+            cursorY += (mouseY - cursorY) * 0.2;
+            
+            cursorGlow.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
 
         /* --- 2. HATOM-INSPIRED GLOBE & INTERACTION --- */
         const container = document.getElementById('starfield');
@@ -1550,6 +1573,7 @@
             renderer.render(scene, camera);
         }
 
+        // Optimized mouse tracker for 3D tilt
         document.addEventListener('mousemove', (event) => {
             normMouseX = (event.clientX / window.innerWidth) * 2 - 1;
             normMouseY = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -1565,28 +1589,49 @@
 
         initGlobe();
 
-        /* --- 3. SCROLL FADE LOGIC --- */
+        /* --- 3. SCROLL FADE LOGIC (THROTTLED VIA RAF) --- */
+        let lastScrollY = 0;
+        let ticking = false;
+
         window.addEventListener('scroll', () => {
+            lastScrollY = window.scrollY;
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateScrollEffects(lastScrollY);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        function updateScrollEffects(scrollY) {
             if (!globeMesh) return;
-            const scrollY = window.scrollY;
             const fadePoint = 500;
             let opacity = 1 - (scrollY / fadePoint);
             if (opacity < 0) opacity = 0;
+            
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             const maxOpacity = isDark ? 0.15 : 0.08;
+            
             globeMesh.material.opacity = opacity * maxOpacity;
             globeMesh.position.y = -scrollY * 0.002; 
-        });
+        }
 
-        /* --- 4. SPOTLIGHT EFFECT (UPDATED FOR SCOPES & WORK) --- */
-        // We track mouse on the document, so we can light up any card anywhere
-        document.addEventListener('mousemove', e => {
-            const allCards = document.querySelectorAll('.brand-card, .scope-card');
-            
-            allCards.forEach(card => {
+        /* --- 4. SPOTLIGHT EFFECT (HEAVILY OPTIMIZED) --- */
+        // Replaces global document listener loop
+        // Instead of calculating bounds for ALL cards constantly, 
+        // we attach listener to each card individually.
+        const allCards = document.querySelectorAll('.brand-card, .scope-card');
+        
+        allCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                // e.offsetX/Y is relative to the target, but if target has children it gets messy.
+                // We use getBoundingClientRect ONLY on the single active card.
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
+                
+                // Directly set property on the specific card
                 card.style.setProperty('--x', `${x}px`);
                 card.style.setProperty('--y', `${y}px`);
             });
