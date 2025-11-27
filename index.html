@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dylan Lam - Portfolio</title>
     
+    <meta name="description" content="Portfolio of Dylan Lam. Strategic thinker thriving at the intersection of business structure and creative design.">
+    <meta property="og:title" content="Dylan Lam - Structure & Creativity">
+    <meta property="og:description" content="Portfolio of Dylan Lam. Strategic thinker thriving at the intersection of business structure and creative design.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#050505">
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='30' fill='%23111111'/><text x='50' y='70' font-family='Arial, sans-serif' font-size='70' font-weight='bold' fill='%23ffffff' text-anchor='middle'>D</text></svg>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,14 +37,15 @@
             
             --card-bg: #161617;
             --card-hover: #1c1c1e;
-            --card-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            --card-shadow: 0 30px 60px rgba(0,0,0,0.6);
             --reveal-bg: #1E1E1E;
             
             --nav-bg: rgba(20, 20, 20, 0.7);
             --nav-border: rgba(255, 255, 255, 0.1);
             --nav-mobile-bg: rgba(20, 20, 20, 0.95);
             
-            --hero-gradient: linear-gradient(135deg, #FFFFFF 0%, #999999 100%);
+            /* Animated Gradient Variables */
+            --hero-gradient: linear-gradient(120deg, #FFFFFF 0%, #999999 50%, #FFFFFF 100%);
             --stat-gradient: linear-gradient(180deg, #fff 0%, #666 100%);
             
             --pill-bg: transparent;
@@ -50,8 +57,8 @@
             --btn-hover: rgba(255, 255, 255, 0.2);
 
             /* --- CURSOR GLOW (Dark Mode) --- */
-            --cursor-bg: 255, 255, 255; /* White */
-            --cursor-blend: difference; /* Invert colors over text */
+            --cursor-bg: 255, 255, 255; 
+            --cursor-blend: difference; 
             --cursor-opacity: 1;
             --cursor-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.4);
         }
@@ -76,7 +83,7 @@
             --nav-border: rgba(0, 0, 0, 0.05);
             --nav-mobile-bg: rgba(255, 255, 255, 0.95);
             
-            --hero-gradient: linear-gradient(135deg, #1D1D1F 0%, #424245 100%);
+            --hero-gradient: linear-gradient(120deg, #1D1D1F 0%, #424245 50%, #1D1D1F 100%);
             --stat-gradient: linear-gradient(180deg, #1D1D1F 0%, #86868B 100%);
             
             --pill-bg: rgba(0,0,0,0.05);
@@ -87,14 +94,20 @@
             --btn-bg: rgba(0, 0, 0, 0.05);
             --btn-hover: rgba(0, 0, 0, 0.1);
 
-            /* --- CURSOR GLOW (Light Mode Fix) --- */
-            --cursor-bg: 41, 151, 255; /* Accent Blue */
-            --cursor-blend: multiply; /* Darkens content behind it */
+            --cursor-bg: 41, 151, 255; 
+            --cursor-blend: multiply; 
             --cursor-opacity: 0.6;
             --cursor-shadow: 0 0 30px 10px rgba(41, 151, 255, 0.3);
         }
 
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+
+        /* Hide Scrollbar for Lenis (Lenis handles scrolling) */
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+        .lenis.lenis-scrolling iframe { pointer-events: none; }
 
         body {
             background-color: var(--bg-body);
@@ -105,15 +118,80 @@
             overflow-x: hidden;
             line-height: 1.5;
             transition: background-color var(--transition-speed), color var(--transition-speed);
-            cursor: none; /* HIDE DEFAULT CURSOR */
+            cursor: none; 
         }
 
-        a, button { cursor: none; text-decoration: none; }
-        
-        /* Global override for links */
-        a { text-decoration: none !important; }
+        a, button { cursor: none; text-decoration: none !important; }
 
-        /* --- MAIN CURSOR GLOW (SINGLE DOT) --- */
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        #preloader.hidden { opacity: 0; visibility: hidden; }
+        .loader-spinner {
+            width: 40px; height: 40px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: var(--text-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- PROGRESS BAR --- */
+        #progress-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 2px;
+            z-index: 100000;
+            background: transparent;
+        }
+        #progress-bar {
+            height: 100%;
+            background: var(--accent-blue);
+            width: 0%;
+            box-shadow: 0 0 10px var(--accent-blue);
+            transition: width 0.1s;
+        }
+
+        /* --- CUSTOM SELECTION --- */
+        ::selection {
+            background: rgba(41, 151, 255, 0.3);
+            color: #fff;
+            text-shadow: 0 0 10px rgba(41, 151, 255, 0.8);
+        }
+
+        /* --- FILM GRAIN OVERLAY --- */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9000;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* --- CLICK RIPPLE --- */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple-anim 0.6s linear;
+            pointer-events: none;
+            z-index: 9998;
+        }
+        @keyframes ripple-anim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* --- MAIN CURSOR GLOW --- */
         #cursor-glow {
             position: fixed;
             top: 0; left: 0;
@@ -127,7 +205,6 @@
             z-index: 9999;
             will-change: transform;
             transform: translate(-50%, -50%);
-            /* Removed smooth transition on transform to make it snappier and less laggy feeling */
             transition: width 0.2s, height 0.2s, background-color 0.3s;
         }
 
@@ -138,22 +215,15 @@
             background-color: rgba(var(--cursor-bg), 0.2);
         }
 
-        /* --- BACKGROUND STARFIELD (FIXED) --- */
+        /* --- BACKGROUND STARFIELD --- */
         #starfield {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: 1; /* Sits behind content */
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            z-index: 1; 
             pointer-events: none;
         }
-        
-        #starfield canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
+        #starfield canvas { display: block; width: 100%; height: 100%; }
 
         /* --- NAV --- */
         .nav-wrapper {
@@ -181,11 +251,7 @@
             position: relative;
         }
 
-        .nav-links-container {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .nav-links-container { display: flex; align-items: center; gap: 4px; }
 
         .nav-link {
             color: var(--text-primary);
@@ -196,12 +262,11 @@
             transition: all 0.2s ease;
             opacity: 0.7;
             text-decoration: none; 
+            display: inline-block;
         }
 
-        .nav-link:hover { 
-            background: var(--glass-hover);
-            opacity: 1;
-        }
+        .nav-link:hover { background: var(--glass-hover); opacity: 1; }
+        .nav-link.active { background: var(--text-primary); color: var(--bg-body); opacity: 1; }
 
         .desktop-only { display: block; }
         
@@ -257,7 +322,7 @@
         .mobile-dropdown.active { display: flex; }
         .mobile-dropdown .nav-link { width: 100%; text-align: center; padding: 14px; font-size: 15px; }
 
-        /* --- HERO --- */
+        /* --- HERO & ANIMATIONS --- */
         .hero-section {
             position: relative;
             height: 100vh;
@@ -269,10 +334,8 @@
 
         .hero-content {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: auto;
+            bottom: 0; left: 0;
+            width: 100%; height: auto;
             z-index: 10;
             padding: 60px;
             padding-bottom: 80px;
@@ -290,6 +353,16 @@
             max-width: 800px;
         }
 
+        .animate-in { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.8s ease forwards; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.3s; }
+        .delay-3 { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        .hacker-text { display: inline-block; cursor: default; }
+        .hacker-text.scrambling { color: var(--accent-blue); font-family: monospace; }
+
         h1 {
             font-family: "Inter", sans-serif;
             font-size: 72px; 
@@ -300,10 +373,17 @@
             margin: 0;
             margin-bottom: 8px;
             background: var(--hero-gradient);
+            background-size: 200% auto; /* For breathing animation */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transition: background var(--transition-speed);
             filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5)); 
+            animation: gradientMove 5s ease infinite; /* Breathing Gradient */
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .hero-sub {
@@ -385,9 +465,10 @@
         .span-6 { grid-column: span 6; }
         .span-12 { grid-column: span 12; }
 
-        /* --- SCOPES (UPDATED WITH SPOTLIGHT) --- */
-        .scope-card {
-            background: var(--card-bg); /* Matched to Work cards */
+        /* --- CARDS (SHARED 3D TILT STYLES) --- */
+        /* Common base for tilt effect */
+        .brand-card, .scope-card {
+            background: var(--card-bg); 
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-card);
             padding: 40px;
@@ -396,14 +477,20 @@
             justify-content: space-between;
             min-height: 300px;
             cursor: default;
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
             position: relative;
             overflow: hidden;
-            will-change: transform; /* Performance hint */
+            
+            /* KEY FOR TILT */
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
+            transition: transform 0.1s ease, box-shadow 0.4s ease; /* Fast transform for mouse */
         }
 
-        /* Spotlight Logic for Scopes */
-        .scope-card::before {
+        .brand-card { padding: 32px; justify-content: flex-start; height: 440px; }
+
+        /* Spotlight Logic */
+        .brand-card::before, .scope-card::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -414,9 +501,7 @@
                 rgba(255, 255, 255, 0.4), 
                 transparent 40%
             );
-            -webkit-mask: 
-                linear-gradient(#fff 0 0) content-box, 
-                linear-gradient(#fff 0 0);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
             pointer-events: none;
@@ -425,14 +510,7 @@
             z-index: 2;
         }
 
-        /* Show light on hover */
-        .grid:hover .scope-card::before { opacity: 1; }
-
-        .scope-card:hover {
-            transform: translateY(-6px);
-            background: var(--card-hover);
-            box-shadow: var(--card-shadow);
-        }
+        .grid:hover .scope-card::before, .project-grid:hover .brand-card::before { opacity: 1; }
 
         .scope-num { 
             font-size: 16px; 
@@ -477,59 +555,11 @@
         .filter-pill:hover { background: var(--glass-hover); color: var(--text-primary); }
         .filter-pill.active { background: var(--pill-active-bg); color: var(--pill-active-text); font-weight: 600; border-color: transparent; }
 
-        /* --- BRAND CARD & SPOTLIGHT EFFECT --- */
+        /* --- PROJECT GRID --- */
         .project-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 24px;
-        }
-
-        .brand-card {
-            position: relative;
-            border-radius: 30px;
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
-            display: flex;
-            flex-direction: column;
-            padding: 32px;
-            animation: fadeIn 0.5s ease;
-            box-shadow: 0 0 0 transparent;
-            overflow: hidden;
-            height: 440px;
-            justify-content: flex-start;
-            will-change: transform; /* Performance hint */
-        }
-
-        /* Spotlight Effect Logic */
-        .brand-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 30px;
-            padding: 1.5px; 
-            background: radial-gradient(
-                800px circle at var(--x) var(--y), 
-                rgba(255, 255, 255, 0.4), 
-                transparent 40%
-            );
-            -webkit-mask: 
-                linear-gradient(#fff 0 0) content-box, 
-                linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0; 
-            transition: opacity 0.3s ease;
-            z-index: 2;
-        }
-
-        .project-grid:hover .brand-card::before { opacity: 1; }
-
-        .brand-card:hover {
-            transform: translateY(-6px);
-            background: var(--card-hover);
-            box-shadow: var(--card-shadow);
         }
 
         .card-header {
@@ -540,6 +570,7 @@
             position: relative;
             z-index: 50; 
             pointer-events: none;
+            transform: translateZ(20px); /* 3D pop */
         }
 
         .brand-avatar {
@@ -589,6 +620,7 @@
             margin-top: auto;
             position: relative;
             z-index: 1;
+            transform: translateZ(10px); /* 3D pop */
         }
 
         .meta-item { display: flex; flex-direction: column; }
@@ -615,15 +647,14 @@
             z-index: 60;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             backdrop-filter: blur(10px);
+            transform: translateZ(30px); /* 3D pop high */
         }
-        .plus-btn:hover { background: var(--btn-hover); transform: scale(1.1); }
-        .brand-card.active .plus-btn { background: var(--text-primary); color: var(--bg-body); transform: rotate(45deg); }
+        .plus-btn:hover { background: var(--btn-hover); transform: translateZ(30px) scale(1.1); }
+        .brand-card.active .plus-btn { background: var(--text-primary); color: var(--bg-body); transform: translateZ(30px) rotate(45deg); }
 
         .card-reveal {
             position: absolute;
-            bottom: 0; 
-            left: 0; 
-            width: 100%;
+            bottom: 0; left: 0; width: 100%;
             height: calc(100% - 110px);
             background: var(--reveal-bg);
             padding: 32px;
@@ -633,7 +664,7 @@
             flex-direction: column;
             justify-content: flex-start;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(20px) translateZ(5px);
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             z-index: 40;
@@ -641,7 +672,7 @@
             pointer-events: none;
         }
 
-        .brand-card.active .card-reveal { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .brand-card.active .card-reveal { opacity: 1; transform: translateY(0) translateZ(5px); pointer-events: auto; }
         .reveal-desc { font-size: 14px; color: var(--text-primary); line-height: 1.6; margin-bottom: 20px; overflow-y: auto; }
 
         .learn-more-btn {
@@ -690,8 +721,6 @@
         .footer { position: relative; z-index: 10; text-align: center; padding: 100px 0; color: var(--text-secondary); font-size: 13px; border-top: 1px solid var(--glass-border); margin-top: 100px; background: var(--bg-body); }
         .footer a { color: var(--text-primary); margin: 0 10px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         @media (max-width: 768px) {
             .stats-row { flex-wrap: wrap; gap: 40px; }
             .stat-val { font-size: 64px; }
@@ -710,6 +739,15 @@
 </head>
 <body>
 
+    <div id="preloader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div class="noise-overlay"></div>
     <div id="cursor-glow"></div>
 
     <div id="starfield"></div>
@@ -717,7 +755,7 @@
     <div class="nav-wrapper">
         <nav class="nav-bar">
             <div class="nav-links-container">
-                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#overview" class="nav-link active">Overview</a>
                 <a href="#scopes" class="nav-link desktop-only">Scopes</a>
                 <a href="#work" class="nav-link">Work</a>
                 <a href="#thoughts" class="nav-link desktop-only">Thoughts</a>
@@ -741,8 +779,8 @@
     <header class="hero-section" id="overview">
         <div class="hero-content">
             <div class="hero-text-side">
-                <h1>Hi, I’m Dylan.</h1>
-                <div class="hero-sub">
+                <h1 class="hacker-text animate-in delay-1">Hi, I’m Dylan.</h1>
+                <div class="hero-sub animate-in delay-2">
                     A strategic thinker who thrives at the intersection of <br>
                     <span class="highlight">Structure</span> and <span class="highlight">Creativity</span>.
                 </div>
@@ -751,58 +789,58 @@
     </header>
 
     <div class="section">
-        <div class="stats-row">
+        <div class="stats-row animate-in delay-3">
             <div class="stat-item">
-                <div class="stat-val">4</div>
+                <div class="stat-val hacker-text">4</div>
                 <div class="stat-lbl">Core Scopes</div>
             </div>
             <div class="stat-item">
-                <div class="stat-val">25+</div>
+                <div class="stat-val hacker-text">25+</div>
                 <div class="stat-lbl">Projects Led</div>
             </div>
             <div class="stat-item">
-                <div class="stat-val">7+</div>
+                <div class="stat-val hacker-text">7+</div>
                 <div class="stat-lbl">Years Exp</div>
             </div>
         </div>
+    </div>
 
-        <div id="scopes">
-            <h2 class="section-title">Scopes</h2>
-            <div class="grid">
-                <div class="scope-card span-6">
-                    <div class="scope-num">01</div>
-                    <div>
-                        <div class="scope-title">Sales & Account<br>Management</div>
-                        <p class="scope-desc">I connect with people, build trust, and make sure deals don’t just close—but last. Expertise in high-value client retention.</p>
-                    </div>
+    <div class="section" id="scopes">
+        <h2 class="section-title hacker-text">Scopes</h2>
+        <div class="grid">
+            <div class="scope-card span-6">
+                <div class="scope-num">01</div>
+                <div>
+                    <div class="scope-title">Sales & Account<br>Management</div>
+                    <p class="scope-desc">I connect with people, build trust, and make sure deals don’t just close—but last. Expertise in high-value client retention.</p>
                 </div>
-                <div class="scope-card span-6">
-                    <div class="scope-num">02</div>
-                    <div>
-                        <div class="scope-title">Data & Business<br>Analytics</div>
-                        <p class="scope-desc">Making sense of messy data. Turning complex metrics into simple stories that help businesses grow with confidence.</p>
-                    </div>
+            </div>
+            <div class="scope-card span-6">
+                <div class="scope-num">02</div>
+                <div>
+                    <div class="scope-title">Data & Business<br>Analytics</div>
+                    <p class="scope-desc">Making sense of messy data. Turning complex metrics into simple stories that help businesses grow with confidence.</p>
                 </div>
-                <div class="scope-card span-6">
-                    <div class="scope-num">03</div>
-                    <div>
-                        <div class="scope-title">Project<br>Management</div>
-                        <p class="scope-desc">I bring order to chaos. Managing cross-functional teams (Design, Build, Ops) to ensure ideas succeed in the real world.</p>
-                    </div>
+            </div>
+            <div class="scope-card span-6">
+                <div class="scope-num">03</div>
+                <div>
+                    <div class="scope-title">Project<br>Management</div>
+                    <p class="scope-desc">I bring order to chaos. Managing cross-functional teams (Design, Build, Ops) to ensure ideas succeed in the real world.</p>
                 </div>
-                <div class="scope-card span-6">
-                    <div class="scope-num">04</div>
-                    <div>
-                        <div class="scope-title">Notion System<br>Design</div>
-                        <p class="scope-desc">Designing effortless digital ecosystems. I build tools for internal operations, CRM, and project tracking.</p>
-                    </div>
+            </div>
+            <div class="scope-card span-6">
+                <div class="scope-num">04</div>
+                <div>
+                    <div class="scope-title">Notion System<br>Design</div>
+                    <p class="scope-desc">Designing effortless digital ecosystems. I build tools for internal operations, CRM, and project tracking.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="section" id="work">
-        <h2 class="section-title">Selected Work</h2>
+        <h2 class="section-title hacker-text">Selected Work</h2>
         
         <div class="filter-container">
             <button class="filter-pill active" onclick="filterProjects('all')">❖ Full Portfolio</button>
@@ -1373,7 +1411,7 @@
     </div>
 
     <div class="section" id="thoughts">
-        <h2 class="section-title">Thoughts</h2>
+        <h2 class="section-title hacker-text">Thoughts</h2>
         <div class="thought-list">
             <a href="https://www.linkedin.com/posts/dylanlamwork_inventandsimplify-customerobsession-biasforaction-activity-7394932105178308608-IKBq" target="_blank" class="thought-item">
                 <div class="thought-date">Nov 2025</div>
@@ -1403,7 +1441,7 @@
     </div>
 
     <div class="section" id="career">
-        <h2 class="section-title">Career History</h2>
+        <h2 class="section-title hacker-text">Career History</h2>
         <div class="scope-card" style="cursor: default; padding: 0 40px;">
             <table class="career-table">
                 <tr class="career-row">
@@ -1447,60 +1485,124 @@
     </div>
 
     <div class="footer">
-        <a href="mailto:dylanlamwork@gmail.com">dylanlamwork@gmail.com</a> • 
+        <div style="margin-bottom: 8px;">
+            <span id="time-display" style="font-variant-numeric: tabular-nums;">--:--</span> • Ho Chi Minh City
+        </div>
+        <a href="#" onclick="copyEmail(this, event)">dylanlamwork@gmail.com</a> • 
         <a href="https://www.linkedin.com/in/dylanlamwork/" target="_blank">LinkedIn</a>
         <br><br>
         © 2025 Dylan Lam • Portfolio
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
 
     <script>
-        /* --- 1. MOUSE GLOW FOLLOWER (SINGLE DOT) - OPTIMIZED --- */
-        const cursorGlow = document.getElementById('cursor-glow');
-        let mouseX = 0;
-        let mouseY = 0;
-        let cursorX = 0;
-        let cursorY = 0;
+        /* --- 0. INERTIA SCROLL (LENIS) --- */
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smooth: true
+        });
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
 
-        // Only update coordinate variables on mousemove
+        /* --- 1. PRELOADER LOGIC --- */
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+                setTimeout(() => preloader.style.display = 'none', 800);
+            }, 500);
+        });
+
+        /* --- 2. MOUSE & RIPPLE --- */
+        const cursorGlow = document.getElementById('cursor-glow');
+        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
+            createRipple(e.clientX, e.clientY);
         });
 
-        // Use requestAnimationFrame for smooth visual updates
         function animateCursor() {
-            // Simple easing for smooth follow effect
             cursorX += (mouseX - cursorX) * 0.2;
             cursorY += (mouseY - cursorY) * 0.2;
-            
             cursorGlow.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
             requestAnimationFrame(animateCursor);
         }
         animateCursor();
 
-        /* --- 2. HATOM-INSPIRED GLOBE & INTERACTION --- */
+        function createRipple(x, y) {
+            if (Math.random() > 0.1) return; 
+            const ripple = document.createElement('div');
+            ripple.classList.add('ripple');
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        }
+        
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.classList.add('ripple');
+            ripple.style.left = `${e.clientX}px`;
+            ripple.style.top = `${e.clientY}px`;
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        /* --- 3. 3D TILT EFFECT --- */
+        // Applies a subtle 3D tilt to cards based on mouse position relative to the card center
+        const tiltCards = document.querySelectorAll('.brand-card, .scope-card');
+        
+        tiltCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Spotlight logic
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
+
+                // 3D Tilt Logic
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -2; // Max 2deg rotation
+                const rotateY = ((x - centerX) / centerX) * 2;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+
+        /* --- 4. HATOM GLOBE --- */
         const container = document.getElementById('starfield');
         let scene, camera, renderer, globeMesh, particlesMesh;
-        let normMouseX = 0;
-        let normMouseY = 0;
+        let normMouseX = 0, normMouseY = 0;
 
-        // HELPER: Create a Circle Texture on the fly
         function createCircleTexture() {
             const size = 64;
             const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            
+            canvas.width = size; canvas.height = size;
             const ctx = canvas.getContext('2d');
             const center = size / 2;
-            
             ctx.beginPath();
             ctx.arc(center, center, center / 2, 0, Math.PI * 2);
             ctx.fillStyle = '#FFFFFF';
             ctx.fill();
-            
             return new THREE.CanvasTexture(canvas);
         }
 
@@ -1509,56 +1611,33 @@
                 scene = new THREE.Scene();
                 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
                 camera.position.z = 4.5; 
-
                 renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
                 container.appendChild(renderer.domElement);
 
-                // --- OBJECT 1: WIREFRAME GLOBE ---
                 const globeGeo = new THREE.SphereGeometry(2.0, 32, 32); 
-                const globeMat = new THREE.MeshBasicMaterial({ 
-                    color: 0x333333,
-                    wireframe: true,
-                    transparent: true,
-                    opacity: 0.15
-                });
+                const globeMat = new THREE.MeshBasicMaterial({ color: 0x333333, wireframe: true, transparent: true, opacity: 0.15 });
                 globeMesh = new THREE.Mesh(globeGeo, globeMat);
                 scene.add(globeMesh);
 
-                // --- OBJECT 2: CIRCULAR STARS ---
                 const particlesGeo = new THREE.BufferGeometry();
                 const particleCount = 1800; 
                 const posArray = new Float32Array(particleCount * 3);
-
                 for(let i = 0; i < particleCount * 3; i+=3) {
                     posArray[i] = (Math.random() - 0.5) * 40; 
                     posArray[i+1] = (Math.random() - 0.5) * 40;
                     posArray[i+2] = (Math.random() - 0.5) * 40;
                 }
-
                 particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-                
-                // UPDATED MATERIAL: Uses map (texture) and increased size slightly
-                const particlesMat = new THREE.PointsMaterial({
-                    size: 0.12, 
-                    color: 0xffffff,
-                    map: createCircleTexture(), // APPLY CIRCLE TEXTURE
-                    transparent: true,
-                    alphaTest: 0.1, // Helps remove black box edges
-                    opacity: 0.8
-                });
-
+                const particlesMat = new THREE.PointsMaterial({ size: 0.12, color: 0xffffff, map: createCircleTexture(), transparent: true, alphaTest: 0.1, opacity: 0.8 });
                 particlesMesh = new THREE.Points(particlesGeo, particlesMat);
                 scene.add(particlesMesh);
 
                 const currentTheme = document.documentElement.getAttribute('data-theme');
                 updateGlobeTheme(currentTheme);
                 animateGlobe();
-
-            } catch (e) {
-                console.error("Three.js Globe Failed to Initialize:", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         function animateGlobe() {
@@ -1573,7 +1652,6 @@
             renderer.render(scene, camera);
         }
 
-        // Optimized mouse tracker for 3D tilt
         document.addEventListener('mousemove', (event) => {
             normMouseX = (event.clientX / window.innerWidth) * 2 - 1;
             normMouseY = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -1589,9 +1667,10 @@
 
         initGlobe();
 
-        /* --- 3. SCROLL FADE LOGIC (THROTTLED VIA RAF) --- */
+        /* --- 5. SCROLL FX --- */
         let lastScrollY = 0;
         let ticking = false;
+        const progressBar = document.getElementById('progress-bar');
 
         window.addEventListener('scroll', () => {
             lastScrollY = window.scrollY;
@@ -1605,43 +1684,111 @@
         });
 
         function updateScrollEffects(scrollY) {
-            if (!globeMesh) return;
-            const fadePoint = 500;
-            let opacity = 1 - (scrollY / fadePoint);
-            if (opacity < 0) opacity = 0;
-            
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const maxOpacity = isDark ? 0.15 : 0.08;
-            
-            globeMesh.material.opacity = opacity * maxOpacity;
-            globeMesh.position.y = -scrollY * 0.002; 
+            if (globeMesh) {
+                const fadePoint = 500;
+                let opacity = 1 - (scrollY / fadePoint);
+                if (opacity < 0) opacity = 0;
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const maxOpacity = isDark ? 0.15 : 0.08;
+                globeMesh.material.opacity = opacity * maxOpacity;
+                globeMesh.position.y = -scrollY * 0.002; 
+            }
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            progressBar.style.width = scrolled + "%";
         }
 
-        /* --- 4. SPOTLIGHT EFFECT (HEAVILY OPTIMIZED) --- */
-        // Replaces global document listener loop
-        // Instead of calculating bounds for ALL cards constantly, 
-        // we attach listener to each card individually.
-        const allCards = document.querySelectorAll('.brand-card, .scope-card');
-        
-        allCards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                // e.offsetX/Y is relative to the target, but if target has children it gets messy.
-                // We use getBoundingClientRect ONLY on the single active card.
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                // Directly set property on the specific card
-                card.style.setProperty('--x', `${x}px`);
-                card.style.setProperty('--y', `${y}px`);
+        const observerOptions = { root: null, rootMargin: '-20% 0px -20% 0px', threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    const activeLink = document.querySelector(`.nav-link[href="#${id}"]`);
+                    if (activeLink) {
+                        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                        activeLink.classList.add('active');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('header, .section').forEach((section) => {
+            if(section.id) observer.observe(section);
+        });
+
+        /* --- 6. HACKER TEXT & MAGNET --- */
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+~`|}{[]:;?><,./-=";
+        function enableTextScramble(selector) {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                element.dataset.value = element.innerText;
+                element.onmouseover = event => {
+                    let iterations = 0;
+                    const target = event.target;
+                    if (target.dataset.animating === "true") return;
+                    target.dataset.animating = "true";
+                    target.classList.add('scrambling');
+                    const interval = setInterval(() => {
+                        target.innerText = target.innerText.split("").map((letter, index) => {
+                            if (index < iterations) return target.dataset.value[index];
+                            return letters[Math.floor(Math.random() * 26)];
+                        }).join("");
+                        if (iterations >= target.dataset.value.length) { 
+                            clearInterval(interval);
+                            target.dataset.animating = "false";
+                            target.classList.remove('scrambling');
+                        }
+                        iterations += 1 / 3; 
+                    }, 30);
+                }
+            });
+        }
+
+        const magneticBtns = document.querySelectorAll('.nav-link, .mobile-menu-btn, .theme-toggle');
+        magneticBtns.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const position = btn.getBoundingClientRect();
+                const x = e.clientX - position.left - position.width / 2;
+                const y = e.clientY - position.top - position.height / 2;
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.5}px)`;
+            });
+            btn.addEventListener('mouseout', () => {
+                btn.style.transform = 'translate(0px, 0px)';
             });
         });
 
-        /* --- 5. THEME & UI LOGIC --- */
+        /* --- 7. UTILS --- */
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Ho_Chi_Minh' });
+            const display = document.getElementById('time-display');
+            if(display) display.textContent = timeString;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        function copyEmail(el, e) {
+            e.preventDefault();
+            const email = "dylanlamwork@gmail.com";
+            navigator.clipboard.writeText(email).then(() => {
+                const originalText = el.innerText;
+                el.innerText = "Copied to clipboard!";
+                el.style.color = "#2997FF"; 
+                setTimeout(() => { el.innerText = originalText; el.style.color = ""; }, 2000);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            enableTextScramble(".hacker-text");
+            enableTextScramble("h1"); 
+            enableTextScramble(".section-title"); 
+            console.log("%c Directed by Dylan Lam. \n%c Co-authored by AI.", "font-family: 'Inter', sans-serif; font-weight: 700; font-size: 16px; color: #fff; background: #000; padding: 10px; border-radius: 5px;", "font-family: monospace; color: #888; margin-top: 5px;");
+        });
+
         const themeBtn = document.getElementById('themeBtn');
         const themeIcon = document.getElementById('themeIcon');
         const htmlTag = document.documentElement;
-
         const savedTheme = localStorage.getItem('theme') || 'dark';
         htmlTag.setAttribute('data-theme', savedTheme);
         updateIcon(savedTheme);
@@ -1656,24 +1803,16 @@
             updateGlobeTheme(newTheme);
         });
 
-        function updateIcon(theme) {
-            themeIcon.textContent = theme === 'dark' ? '☀︎' : '☾';
-        }
+        function updateIcon(theme) { themeIcon.textContent = theme === 'dark' ? '☀︎' : '☾'; }
 
         function updateGlobeTheme(theme) {
             if(!globeMesh || !particlesMesh) return;
             if(theme === 'light') {
-                globeMesh.material.color.setHex(0x1a1a1a); 
-                globeMesh.material.opacity = 0.08; 
-                particlesMesh.material.color.setHex(0x000000); 
-                particlesMesh.material.opacity = 0.3; 
-                container.style.opacity = "0.5"; 
+                globeMesh.material.color.setHex(0x1a1a1a); globeMesh.material.opacity = 0.08; 
+                particlesMesh.material.color.setHex(0x000000); particlesMesh.material.opacity = 0.3; container.style.opacity = "0.5"; 
             } else {
-                globeMesh.material.color.setHex(0xffffff); 
-                globeMesh.material.opacity = 0.12; 
-                particlesMesh.material.color.setHex(0xffffff); 
-                particlesMesh.material.opacity = 0.8; 
-                container.style.opacity = "1";
+                globeMesh.material.color.setHex(0xffffff); globeMesh.material.opacity = 0.12; 
+                particlesMesh.material.color.setHex(0xffffff); particlesMesh.material.opacity = 0.8; container.style.opacity = "1";
             }
         }
 
@@ -1682,30 +1821,18 @@
             const menuBtn = document.querySelector('.mobile-menu-btn');
             navLinks.classList.toggle('active');
             menuBtn.classList.toggle('active');
-            if(navLinks.classList.contains('active')) {
-                menuBtn.innerHTML = '✕';
-            } else {
-                menuBtn.innerHTML = '+';
-            }
+            if(navLinks.classList.contains('active')) { menuBtn.innerHTML = '✕'; } else { menuBtn.innerHTML = '+'; }
         }
 
         function filterProjects(category) {
             const buttons = document.querySelectorAll('.filter-pill');
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-            });
+            buttons.forEach(btn => { btn.classList.remove('active'); });
             event.currentTarget.classList.add('active');
             const cards = document.querySelectorAll('.brand-card');
             cards.forEach(card => {
                 const categories = card.getAttribute('data-category').split(' ');
-                if (category === 'all') {
-                    card.style.display = 'flex'; 
-                } else {
-                    if (categories.includes(category)) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
+                if (category === 'all') { card.style.display = 'flex'; } else {
+                    if (categories.includes(category)) { card.style.display = 'flex'; } else { card.style.display = 'none'; }
                 }
             });
         }
@@ -1713,13 +1840,7 @@
         function toggleCard(btn) {
             const card = btn.parentElement;
             card.classList.toggle('active');
-            if (card.classList.contains('active')) {
-                btn.innerHTML = '×'; 
-                btn.style.transform = 'rotate(0deg)';
-            } else {
-                btn.innerHTML = '+';
-                btn.style.transform = 'rotate(0deg)';
-            }
+            if (card.classList.contains('active')) { btn.innerHTML = '×'; btn.style.transform = 'rotate(0deg)'; } else { btn.innerHTML = '+'; btn.style.transform = 'rotate(0deg)'; }
         }
     </script>
 
